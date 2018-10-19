@@ -6,16 +6,50 @@ import pygame
 W=1920//2
 H=1080//2
 
-pygame.init()
-screen=pygame.display.set_mode((W,H))
-orb = cv2.ORB_create()
+
+
+
+
+class FeatureExtractor():
+    GX=16//2 #1920/2=960 -> 960/16=60
+    GY=12//2 #1080/2=540 -> 540/12=45
+
+    def __init__(self):
+        self.orb = cv2.ORB_create(10000)
+
+    def extract(self,img):
+        #Hacemos cuadrillas con la imagen, con seccion sy*sx
+        sy=img.shape[0]//self.GY
+        sx=img.shape[1]//self.GX
+        akp=[]
+        #Bucle para recorrer toda la cuadrilla
+        for ry in range(0,img.shape[0],sy):
+            for rx in range(0,img.shape[1],sx):
+                img_chunk=img[ry:ry+sy, rx:rx+sx] #Se hace un chunk que se va incrementando diagonalmente conforme avanza el bucle
+                
+                kp = self.orb.detect(img_chunk, None) 
+                
+                for p in kp:
+                    
+                    p.pt=(p.pt[0] + rx, p.pt[1] + ry) 
+                    akp.append(p)  
+        return akp                 
+
+fe=FeatureExtractor()
+
 
 def process_frame(img):
-    kp, des = orb.detectAndCompute(img,None)
-    for p in kp:
-        print(p)
-
+    
     img=cv2.resize(img,(W,H))
+    
+    kp=fe.extract(img)
+
+    for p in kp:
+        u, v=map(lambda x: int(round(x)),p.pt)
+        cv2.circle(img,(u,v), color=(0,255,0), radius=3)
+        
+
+    
     cv2.imshow("image",img)
 """cv2.waitKey()
 print(img.shape)"""
