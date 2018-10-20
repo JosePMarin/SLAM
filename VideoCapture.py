@@ -2,6 +2,7 @@
 
 import cv2
 import pygame
+import numpy as np
 
 W=1920//2
 H=1080//2
@@ -11,29 +12,20 @@ H=1080//2
 
 
 class FeatureExtractor():
-    GX=16//2 #1920/2=960 -> 960/16=60
-    GY=12//2 #1080/2=540 -> 540/12=45
+
 
     def __init__(self):
         self.orb = cv2.ORB_create(10000)
 
+    #Funcion que extrae los keypoints y sus descriptors para cada imagen
     def extract(self,img):
-        #Hacemos cuadrillas con la imagen, con seccion sy*sx
-        sy=img.shape[0]//self.GY
-        sx=img.shape[1]//self.GX
-        akp=[]
-        #Bucle para recorrer toda la cuadrilla
-        for ry in range(0,img.shape[0],sy):
-            for rx in range(0,img.shape[1],sx):
-                img_chunk=img[ry:ry+sy, rx:rx+sx] #Se hace un chunk que se va incrementando diagonalmente conforme avanza el bucle
-                
-                kp = self.orb.detect(img_chunk, None) 
-                
-                for p in kp:
-                    
-                    p.pt=(p.pt[0] + rx, p.pt[1] + ry) 
-                    akp.append(p)  
-        return akp                 
+        #features(diferencia de escalas en los pixels): detecta las zonas donde se localizaran los keypoints 
+        feats=cv2.goodFeaturesToTrack(np.mean(img, axis=2).astype(np.uint8),3000, qualityLevel=0.01, minDistance=3)
+        kps = [cv2.KeyPoint(x=f[0][0], y=f[0][1], _size=20) for f in feats] #Se extraen los keypoints de cada feature (recorridas por un for)
+        des=self.orb.compute(img,kps) #Se analizan los keypoints de cada feature y se calcula su vector (descriptor)
+       
+        return kps,des 
+               
 
 fe=FeatureExtractor()
 
@@ -41,12 +33,12 @@ fe=FeatureExtractor()
 def process_frame(img):
     
     img=cv2.resize(img,(W,H))
-    
-    kp=fe.extract(img)
+    kps, des=fe.extract(img)
 
-    for p in kp:
-        u, v=map(lambda x: int(round(x)),p.pt)
-        cv2.circle(img,(u,v), color=(0,255,0), radius=3)
+    for p in kps:
+        u, v=map(lambda x: int(round(x)),p.pt) #aproximacion numerica y mapeo de las coordenadas de los keypoints
+        
+        cv2.circle(img,(u,v), color=(0,255,0), radius=3)#Dibuja un circulo verde por cada keypoint
         
 
     
@@ -54,10 +46,11 @@ def process_frame(img):
 """cv2.waitKey()
 print(img.shape)"""
 
-
+#Al ejecutar el .py, ejecuta la captura de video 
 if __name__=="__main__":
     cap=cv2.VideoCapture("./videos/test.mp4")
 
+#Se crea un bucle para ejecutar procesado de imagen mientras el video se reproduzca
 while cap.isOpened():
     # Capture frame-by-frame
     ret, frame = cap.read()
