@@ -9,7 +9,7 @@ class Extractor():
 
 
     def __init__(self):
-        self.orb = cv2.ORB_create(100)
+        self.orb = cv2.ORB_create()
         #Brute-Force matcher: matches entre los descriptors(vectores) de los keypoints de cada feature, usando la distancia de hamming
         self.bf=cv2.BFMatcher(cv2.NORM_HAMMING)
 
@@ -39,13 +39,20 @@ class Extractor():
             for m,n in matches:
                 if m.distance < 0.75*n.distance:
                                       
-                    kp1=kps[m.queryIdx]
-                    kp2=self.last["kps"][m.trainIdx]
+                    kp1=kps[m.queryIdx].pt
+                    kp2=self.last["kps"][m.trainIdx].pt
                     ret.append((kp1,kp2))
         
            
         #Filter
-    
+        if len(ret)>0:
+            ret=np.array(ret)
+            model,inliers=ransac((ret[:,0],ret[:,1]),
+                                FundamentalMatrixTransform,
+                                min_samples=8,
+                                residual_threshold=1,
+                                max_trials=100)
+            ret=ret[inliers]
 
         
 

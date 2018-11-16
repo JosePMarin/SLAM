@@ -26,12 +26,12 @@ def process_frame(img):
         for pt1, pt2 in matches:
 
                 #aproximacion numerica y mapeo de las coordenadas de los keypoints
-                u1, v1=map(lambda x: int(round (x)), pt1.pt) 
-                u2, v2=map(lambda x: int(round (x)), pt2.pt)
+                u1, v1=map(lambda x: int(round (x)), pt1) 
+                u2, v2=map(lambda x: int(round (x)), pt2)
 
                 #Dibuja un circulo verde por cada keypoint
                 cv2.circle(img,(u1,v1), color=(0,255,0), radius=3)
-                cv2.circle(img,(u2,v2), color=(255,255,0), radius=3)
+                cv2.circle(img,(u2,v2), color=(0,0,255), radius=3)
 
                 #Dibuja una linea entre matches
                 cv2.line(img,(u1,v1), (u2, v2), color=(255,0,0))
