@@ -1,7 +1,9 @@
 # pylint: disable=no-member
-import Process
+from Process import Process 
 import cv2
 
+
+p=Process()
 
 class Display(object):
 
@@ -17,7 +19,7 @@ class Display(object):
             ret, frame = self.cap.read()
             if ret == True:
                 
-                Process.process_frame(frame)
+                p.process_frame(frame)
                 #Press Q on keyboard to exit
                 if cv2.waitKey(25) & 0xFF == ord('q'):
                     break

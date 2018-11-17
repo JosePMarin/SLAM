@@ -4,7 +4,7 @@ import cv2
 
 from skimage.measure import ransac
 from skimage.transform import FundamentalMatrixTransform
-
+from skimage.transform import EssentialMatrixTransform
 class Extractor():
 
 
@@ -33,20 +33,32 @@ class Extractor():
         #Se hacen los MATCHES entre los descriptors de los features
         ret  = []
         if self.last is not None:
-            
+            #Se utiliza una función para pillar los k=2 posibles_matches que correspondan a cada verdadero_match
             matches=self.bf.knnMatch(des, self.last["des"],k=2)
            
             for m,n in matches:
+                #Recorremos todos los matches entre frames que esten cercanos
                 if m.distance < 0.75*n.distance:
-                                      
+                    #Para cada match cercano entre frames (frame1 y frame2, consecutivo) se obtienen la indexacion de keypoints (kp1[] y kp2[]) de cada keypoint (kps)                
                     kp1=kps[m.queryIdx].pt
                     kp2=self.last["kps"][m.trainIdx].pt
+                    #Se unen en una lista (ret) los keypoints entre frames
                     ret.append((kp1,kp2))
         
+        
+
+
            
-        #Filter
+        #FILTER: se filtran los keypoints que sean falsos positivos 
+        
+        #Para cada par de keypoints cercanos
         if len(ret)>0:
+            #Se hace una matriz con los pares de keypoints de frames consecutivas
             ret=np.array(ret)
+            #Normaliza coordenadas
+            ret[:,:,0]-=img.shape[0]//2
+            ret[:,:,1]-=img.shape[1]//2
+            #Se utiliza RANSAC para filtrar estos keypoints
             model,inliers=ransac((ret[:,0],ret[:,1]),
                                 FundamentalMatrixTransform,
                                 min_samples=8,
@@ -55,6 +67,6 @@ class Extractor():
             ret=ret[inliers]
 
         
-
+        #Returning array of keypoints of consecutive frames, already filtered out
         self.last={"kps":kps, "des":des}
         return ret
