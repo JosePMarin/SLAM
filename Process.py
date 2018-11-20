@@ -32,7 +32,7 @@ class Process():
 
                 for pt1, pt2 in matches:
 
-                        #Se desnormalizan las coordenadas para poder mostrarse
+                        #Se desnormalizan las coordenadas de pt1 y pt2, provenientes del filtrado, para poder mostrarse
                         u1, v1=extrac.denormalize(pt1) 
                         u2, v2=extrac.denormalize(pt2)
                         

@@ -20,18 +20,27 @@ class Extractor():
         self.last= None
         
         self.F=F
-
-
+    #K = intrinsic matrix -> camera_resectioning (wikipedia)
+    def k(self):
+        K=np.array([[self.F,0,-self.H//2],[0,self.F,-self.W//2],[0,0,1]])
+        return K
     
+    def kinv(self,K):
+        self.K=K
+        Kinv=np.linalg.inv(self.K)
+        return Kinv
+
+    def normalize (self,ret):
+        ret[:,0,:]=np.dot()
 
 
      #Se DESNORMALIZAN las coordenadas para poder hacer un display de los puntos sobre la imagen   
     def denormalize(self, pt):
-        #K = intrinsic matrix -> camera_resectioning (wikipedia)
-        K=np.array([[self.F,0,-self.H//2],[0,self.F,-self.W//2],[0,0,1]])
-        Kinv=np.linalg.inv(K)
+
+    
+        
         b=np.array([pt[0],pt[1],1])
-        c=np.dot(Kinv, b)
+        c=np.dot(self.kinv(self.k()), b)
         
         return int(round(c[0])), int(round(c[1]))          
 
