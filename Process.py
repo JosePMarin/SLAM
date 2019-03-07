@@ -2,7 +2,7 @@
 import time
 import cv2
 import numpy as np
-from Extractor import Extractor
+import Extractor
 
 
 
@@ -14,7 +14,7 @@ F=1
 
 
 
-extrac=Extractor(F,H,W)
+extrac=Extractor.Extractor(F,H,W)
 
 class Process():
 

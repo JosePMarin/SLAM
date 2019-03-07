@@ -39,10 +39,12 @@ class Extractor():
 
     
         
-        b=np.array([pt[0],pt[1],1])
-        c=np.dot(self.kinv(self.k()), b)
+        vector_homog=np.array([pt[0],pt[1],1])
+        vector_norm=np.dot(self.kinv(self.k()), vector_homog)
         
-        return int(round(c[0])), int(round(c[1]))          
+        return int(round(vector_norm[0])), int(round(vector_norm[1]))  
+
+    # hacer print del vector        
 
     #Funcion que extrae los keypoints y sus descriptors para cada imagen
     def extract(self,img):
