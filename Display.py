@@ -1,6 +1,6 @@
 # pylint: disable=no-member
 from Process import Process 
-import cv2
+import 
 
 
 p=Process()
@@ -12,6 +12,8 @@ class Display(object):
         path="./videos/test.mp4"     
         #Al ejecutar el .py, ejecuta la captura de video 
         self.cap=cv2.VideoCapture(path)
+        fps=cv2.VideoCapture.set(self.cap,cv2.CAP_PROP_FPS, 150)
+        
 
         #Se crea un bucle para ejecutar procesado de imagen mientras el video se reproduzca
         while self.cap.isOpened():

@@ -28,7 +28,7 @@ class Process():
                 #matches es un array-2D con los puntos normalizados y filtrados
                 matches=extrac.extract(self.img)
 
-                print("%d matches" %(len(matches)))
+                #print("%d matches" %(len(matches)))
 
                 for pt1, pt2 in matches:
 

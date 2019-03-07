@@ -81,7 +81,7 @@ class Extractor():
             #Se hace una matriz con los pares de keypoints de frames consecutivas
             
             ret=np.array(ret)
-            print(img.shape[0]/2)
+            
             
             #Se NORMALIZAN las coordenadas [:,:,0] y [:,:,1] significa que de cada vector i,j que compone la matriz ret, se coja el primer elemento (0) y se le reste W/2 y el segundo elemento 1 y se le reste H/2 
             # (es decir que cada elemento i,j tiene dimension 2. (a,b) = (a=0, b=1))
